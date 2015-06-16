@@ -1,25 +1,5 @@
 <?php include ('inc-header.php'); ?>
 
-		<?php if (zp_has_filter('theme_head', 'colorbox::css')) {
-			$colorbox_enabled = true;
-		?>
-			<script type="text/javascript">
-				// <!-- <![CDATA[
-				$(document).ready(function() {
-					$(".fullimage-image").colorbox({
-						maxWidth: "98%",
-						maxHeight: "98%",
-						rel:"grp",
-						slideshow:true,
-						slideshowAuto:false,
-						photo: true,
-						close: '<?php echo gettext("close"); ?>'
-					});
-				});
-				// ]]> -->
-			</script>
-		<?php } ?>
-
 		<div id="page-header" class="wrap" style="background-image: linear-gradient(rgba(0, 0, 0, 0.75),rgba(0, 0, 0, 0.75)), url(<?php echo $bg; ?>);">
 			<div class="inner">
 				<h1><?php printAlbumTitle(); ?></h1>
@@ -43,41 +23,33 @@
 			<div class="inner">
 				<div class="gallery pad fullimage">
 					<div class="gallery-fullimage">
-
-						<?php if ($colorbox_enabled) {
-							if (isImagePhoto()) {
-								$fullimage = getFullImageURL();
-							} else {
-								$colorbox_enabled = false;
-							}
-						}
-						?>
-						<?php if ($colorbox_enabled) {
-							echo "<div class='hiddenAllImages' style='display:none'>";
+						<?php if (isImagePhoto()) { ?>
+							<div class='hiddenAllImages' style='display:none'>
+							<?php
 							for ($i=0;$i<$_zp_current_image->getIndex();++$i) {
 								$img= $_zp_current_album->getImage($i);
-								echo '<a class="fullimage-image" href="' . $img->getFullImage() . '" title="'.$img->getTitle().'"></a>';
+								if (isImagePhoto($img))
+									echo '<a class="swipebox" href="' . html_encode(getFullImageURL($img)) . '" title="'.getBareImageTitle($img).'"></a>';
 							}
-							echo "</div>";
-						?>
+							?>
+							</div>
 
-							<a href="<?php echo html_encode(pathurlencode($fullimage)); ?>" title="<?php printBareImageTitle(); ?>" class="fullimage-image">
+						<a class="swipebox" title="<?php echo getBareImageTitle(); ?>" href="<?php echo html_encode(getFullImageURL()); ?>">
 						<?php } ?>
-
 						<?php printDefaultSizedImage(getBareImageTitle(),'scale'); ?>
+						<?php if (isImagePhoto()) { ?>
+						</a>
 
-						<?php if ($colorbox_enabled) {
-							echo '</a>';
-
-							echo "<div class='hiddenAllImages' style='display:none'>";
+						<div class='hiddenAllImages' style='display:none'>
+							<?php
 							for ($i=$_zp_current_image->getIndex()+1;$i<$_zp_current_album->getNumImages();++$i) {
 								$img= $_zp_current_album->getImage($i);
-								echo '<a class="fullimage-image" href="' . $img->getFullImage() . '" title="'.$img->getTitle().'"></a>';
+								if (isImagePhoto($img))
+									echo '<a class="swipebox" href="' . html_encode(getFullImageURL($img)) . '" title="'.getBareImageTitle($img).'"></a>';
 							}
-							echo "</div>";
-
-						} ?>
-
+							?>
+							</div>
+						<?php } ?>
 						<?php if (getImageData('copyright')) { ?><p class="image-copy"><i class="fa fa-copyright"></i> <?php echo getImageData('copyright'); ?></p><?php } ?>
 					</div>
 				</div>
@@ -181,7 +153,10 @@
 							</a>
 							<div class="caption caption-image">
 								<?php if (isImagePhoto($obj)) { ?>
-								<a class="swipebox image-zoom" title="<?php echo html_encode('<a href="'.$obj->getLink().'">'.$obj->getTitle().'</a>'); ?>" href="<?php echo html_encode($obj->getSizedImage(getOption('image_size'))); ?>"><i class="fa fa-search-plus fa-lg"></i></a>
+								<!-- <a class="swipebox image-zoom" title="<?php echo html_encode('<a href="'.$obj->getLink().'">'.$obj->getTitle().'</a>'); ?>" href="<?php echo html_encode($obj->getSizedImage(getOption('image_size'))); ?>"><i class="fa fa-search-plus fa-lg"></i></a> -->
+								<!-- <a class="swipebox image-zoom" title="<?php echo html_encode('<a href="'.$obj->getLink().'">'.$obj->getTitle().'</a>'); ?>" href="<?php echo html_encode(getFullImageURL($obj)); ?>"><i class="fa fa-search-plus fa-lg"></i></a> -->
+								<?php echo $obj->getTitle() ?>
+
 								<?php } ?>
 								<?php if (function_exists('getCommentCount')) {
 									if (($obj->getCommentsAllowed()) && ($obj->getCommentCount() > 0)) { ?>
